@@ -4,25 +4,30 @@ import { RouterLink } from 'vue-router';
 import { useFetch } from '@vueuse/core';
 import { ref, computed } from 'vue';
 
-const { isFetching, data } = await useFetch(ALL_REVIEWS_API_URL, {
+// Fetch data safely
+const { data } = await useFetch(ALL_REVIEWS_API_URL, {
   fetchOptions: {
     mode: 'no-cors',
   },
 }).json();
 
-const reviews = ref(data.value?.data || []); // All reviews data
-const searchQuery = ref(''); // Search query state
-const selectedSort = ref('title'); // Default sort by title
+const reviews = ref(data.value?.data || []);
+
+// Local state for search and sort
+const searchQuery = ref('');
+const selectedSort = ref('title');
 
 // Filtered and Sorted Reviews
 const filteredAndSortedReviews = computed(() => {
-  let filtered = reviews.value;
+  let filtered = [...reviews.value]; // Avoid mutation
   if (searchQuery.value) {
     filtered = filtered.filter(review =>
       review.title.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
-  return filtered.sort((a, b) => (a[selectedSort.value] > b[selectedSort.value] ? 1 : -1));
+  return filtered.sort((a, b) =>
+    a[selectedSort.value] > b[selectedSort.value] ? 1 : -1
+  );
 });
 </script>
 
@@ -79,10 +84,24 @@ const filteredAndSortedReviews = computed(() => {
   transition: box-shadow 0.3s ease, transform 0.3s ease;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
 }
+
+
 .card:hover {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   transform: translateY(-5px);
+}
+
+.card router-link {
+  text-decoration: none;
+    display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
 }
 .card h2 {
   margin: 0 0 0.5rem;
@@ -95,6 +114,13 @@ const filteredAndSortedReviews = computed(() => {
 .card h3 {
   margin: 0;
   color: #28a745;
+}
+.card h2,
+.card p,
+.card h3 {
+  margin: 0;
+  color: #343a40;
+  animation: fadeInUp 1s ease-out;
 }
 .title {
   color: #007BFF; /* Title color */

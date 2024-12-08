@@ -14,18 +14,16 @@ const searchQuery = ref('');
         <ul>
           <li><router-link to="/">Home</router-link></li>
           <li><router-link to="/reviews">Reviews</router-link></li>
-        </ul>
-        <!-- Search Box -->
-        <input 
+                  <input 
           type="text" 
           v-model="searchQuery" 
-          placeholder="Search reviews..." 
-          @input="handleSearch" 
+          placeholder="Search reviews..."
         />
+        </ul>
+
       </nav>
     </header>
 
-    <!-- Router View -->
     <Suspense>
       <template #default>
         <RouterView :searchQuery="searchQuery" />
@@ -69,6 +67,9 @@ input[type="text"] {
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: border-color 0.3s ease;
+  width: 50%;
+  animation: fadeIn 1s ease-in-out;
+  height: 30px;
 }
 input[type="text"]:focus {
   border-color: #007BFF;
