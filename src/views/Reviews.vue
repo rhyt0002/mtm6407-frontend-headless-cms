@@ -19,7 +19,6 @@ const review = data.value;
     <ul>
        <li v-for="review in review.data"> 
        <RouterLink :to="`/reviews/${review.documentId}`">
-        <img :src="reviews.image.url" width="400" alt="Image">
         <h2>{{ review.title }}</h2>
         <p>{{ review.description }}</p>
         <h3>{{ review.rating }}</h3>
