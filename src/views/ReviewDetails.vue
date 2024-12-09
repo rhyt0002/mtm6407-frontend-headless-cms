@@ -40,20 +40,20 @@ onMounted(fetchReviewDetails);
     <div v-else-if="review">
       <h2>{{ review.title }}</h2>
       <p>{{ review.description }}</p>
-      <h3>Rating: {{ review.rating }}</h3>
+      <h3>Rating: {{ review.rating }}<span>/10</span><span>🌟</span></h3>
     </div>
   </div>
 </template>
 
 <style scoped>
 h2 {
-  color: #007BFF;
+  color: brown;
   font-size: 2rem;
   margin-bottom: 1rem;
 }
 
 p {
-  color: #555;
+  color: #c69379;
   font-size: 1.1rem;
   margin-bottom: 1rem;
 }
@@ -69,5 +69,14 @@ div {
 
 div.v-else-if {
   text-align: center;
+}
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
+    display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 </style>

@@ -1,32 +1,32 @@
 <script setup>
-import { ALL_REVIEWS_API_URL } from '../utils';
-import { RouterLink } from 'vue-router';
-import { useFetch } from '@vueuse/core';
-import { ref, computed } from 'vue';
+import { ALL_REVIEWS_API_URL } from "../utils";
+import { RouterLink } from "vue-router";
+import { useFetch } from "@vueuse/core";
+import { ref, computed } from "vue";
 
 // Fetch data safely
 const { data } = await useFetch(ALL_REVIEWS_API_URL, {
   fetchOptions: {
-    mode: 'no-cors',
+    mode: "no-cors",
   },
 }).json();
 
 const reviews = ref(data.value?.data || []);
 
 // Local state for search and sort
-const searchQuery = ref('');
-const selectedSort = ref('title');
+const searchQuery = ref("");
+const selectedSort = ref("title");
 
 // Filtered and Sorted Reviews
 const filteredAndSortedReviews = computed(() => {
   let filtered = [...reviews.value]; // Avoid mutation
-  if (searchQuery.value) {
-    filtered = filtered.filter(review =>
-      review.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+  if (searchQuery.value.trim()) {
+    filtered = filtered.filter((review) =>
+      review.title?.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
   return filtered.sort((a, b) =>
-    a[selectedSort.value] > b[selectedSort.value] ? 1 : -1
+    a[selectedSort.value]?.localeCompare(b[selectedSort.value])
   );
 });
 </script>
@@ -34,27 +34,36 @@ const filteredAndSortedReviews = computed(() => {
 <template>
   <div>
     <h1 class="title">Reviews</h1>
-
-    <!-- Sort Dropdown -->
-    <div class="controls">
-      <label for="sort">Sort By:</label>
-      <select id="sort" v-model="selectedSort">
-        <option value="title">Title</option>
-        <option value="rating">Rating</option>
-      </select>
+    <div class="search-sort">
+      <!-- Search Bar -->
+      <div class="controls">
+        <label for="search">Search:</label>
+        <input
+          id="search"
+          type="text"
+          v-model="searchQuery"
+          placeholder="Search reviews..."
+          class="search-input"
+        />
+      </div>
     </div>
 
-    <!-- Card Container -->
-    <div class="card-container">
-      <div
-        v-for="review in filteredAndSortedReviews"
-        :key="review.documentId"
-        class="card"
-      >
-        <RouterLink :to="`/reviews/${review.documentId}`">
-          <h2>{{ review.title }}</h2>
-        </RouterLink>
+    <!-- Titles Container -->
+    <div class="titles-container">
+      <div v-if="filteredAndSortedReviews.length">
+        <div
+          v-for="review in filteredAndSortedReviews"
+          :key="review.documentId"
+          class="title-item"
+        >
+          <RouterLink :to="`/reviews/${review.documentId}`">
+            <h2>{{ review.title }}</h2>
+          </RouterLink>
+        </div>
       </div>
+      <p v-else class="no-results">
+        No reviews found. Please adjust your search.
+      </p>
     </div>
   </div>
 </template>
@@ -67,75 +76,65 @@ const filteredAndSortedReviews = computed(() => {
   align-items: center;
   gap: 1rem;
   color: #343a40;
+  font-size: 1.8rem;
 }
-.card-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+.search-input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1.5rem;
+}
+
+.titles-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 1rem;
   padding: 1rem;
-}
-.card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  background-color: #fff;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-}
-
-
-.card:hover {
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  transform: translateY(-5px);
-}
-
-.card router-link {
-  text-decoration: none;
-    display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   
 }
-.card h2 {
-  margin: 0 0 0.5rem;
-  color: #007BFF;
+
+.title-item {
+  display: flex;
+  justify-content: center;
+  text-align: center;
 }
-.card p {
-  margin: 0 0 0.5rem;
-  color: #555;
+
+.title-item a {
+  display: flex;
+  text-decoration: none;
+  color: #c69379;
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+  border: 1px solid #c69379;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
 }
-.card h3 {
-  margin: 0;
-  color: #28a745;
+
+.title-item a:hover {
+  color: brown;
 }
-.card h2,
-.card p,
-.card h3 {
-  margin: 0;
-  color: #343a40;
-  animation: fadeInUp 1s ease-out;
+.search-sort {
+  display: flex;
+  justify-content: space-evenly;
+  gap: 2rem;
+  margin-bottom: 1rem;
+  
 }
+
+/* General Styling */
 .title {
-  color: #007BFF; /* Title color */
+  color: brown; 
   text-align: center;
   margin-bottom: 2rem;
   font-size: 2rem;
-  animation: fadeInUp 1s ease-out;
 }
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  margin: 0;
+  padding: 0;
 }
 </style>
